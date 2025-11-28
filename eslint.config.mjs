@@ -46,6 +46,10 @@ export default defineConfig( [
 			'no-unused-vars': 'off',
 			'no-undef': 'off',
 			'no-shadow': 'off',
+			'import/no-extraneous-dependencies': 'off',
+			camelcase: 'off',
+			'no-alert': 'off',
+			'no-nested-ternary': 'off',
 		},
 		settings: {
 			'import/resolver': {
