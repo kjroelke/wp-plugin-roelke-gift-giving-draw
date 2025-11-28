@@ -10,5 +10,5 @@ jobs:
         uses: macrosbysara/shared-github-actions/.github/workflows/deploy-release.yml@main
         with:
             should_build: true
-            plugin_name: # Enter plugin name here
+            plugin_name: gift-giving-draw # Enter plugin name here
         secrets: inherit
