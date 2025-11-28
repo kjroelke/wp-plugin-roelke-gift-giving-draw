@@ -68,6 +68,7 @@ export function usePairingEngine( options: PairingEngineOptions ) {
 					const receiver = receivers[ i ];
 					if (
 						giver.id === receiver.id ||
+						giver.household_id === receiver.household_id ||
 						hasRecentPairing(
 							giver.id,
 							receiver.id,
