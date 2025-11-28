@@ -108,7 +108,7 @@ class Drawing_Repository {
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				"SELECT giver_id, receiver_id FROM {$table} WHERE year > %d AND year < %d",
+				"SELECT giver_id, receiver_id FROM {$table} WHERE year >= %d AND year < %d",
 				$min_year,
 				$current_year
 			),

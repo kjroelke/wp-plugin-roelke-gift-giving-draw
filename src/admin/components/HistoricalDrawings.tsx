@@ -70,8 +70,9 @@ export function HistoricalDrawings() {
 		try {
 			await remove( selectedYear );
 			setDrawing( null );
-			setYears( years.filter( ( y ) => y !== selectedYear ) );
-			setSelectedYear( years.length > 1 ? years[ 0 ] : null );
+			const remainingYears = years.filter( ( y ) => y !== selectedYear );
+			setYears( remainingYears );
+			setSelectedYear( remainingYears.length > 0 ? remainingYears[ 0 ] : null );
 		} catch ( err ) {
 			setError(
 				err instanceof Error ? err.message : 'Failed to delete drawing'

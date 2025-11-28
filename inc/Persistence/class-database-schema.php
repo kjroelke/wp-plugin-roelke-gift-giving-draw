@@ -52,7 +52,7 @@ class Database_Schema {
 
 		CREATE TABLE {$drawings_table} (
 			id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-			year int(4) NOT NULL,
+			year YEAR NOT NULL,
 			giver_id bigint(20) UNSIGNED NOT NULL,
 			receiver_id bigint(20) UNSIGNED NOT NULL,
 			created_at datetime DEFAULT CURRENT_TIMESTAMP,

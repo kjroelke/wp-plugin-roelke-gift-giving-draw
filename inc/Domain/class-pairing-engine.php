@@ -23,6 +23,11 @@ class Pairing_Engine {
 	private const MAX_RETRIES = 100;
 
 	/**
+	 * Minimum number of participants required to generate pairings
+	 */
+	private const MIN_PARTICIPANTS = 2;
+
+	/**
 	 * Number of years to look back for repeat prevention
 	 *
 	 * @var int
@@ -62,7 +67,7 @@ class Pairing_Engine {
 			fn( Participant $p ) => $p->is_adult( $this->minimum_age )
 		);
 
-		if ( count( $eligible ) < 2 ) {
+		if ( count( $eligible ) < self::MIN_PARTICIPANTS ) {
 			return null;
 		}
 
