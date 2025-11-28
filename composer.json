@@ -1,6 +1,6 @@
 {
-	"name": "kjroelke/wp-plugin-starter",
-	"description": "A WordPress plugin template.",
+	"name": "kjroelke/gift-giving-draw",
+	"description": "WordPress plugin for generating annual gift-giving pairings with constraints",
 	"type": "project",
 	"config": {
 		"allow-plugins": {

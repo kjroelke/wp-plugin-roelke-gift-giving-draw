@@ -1,7 +1,7 @@
 {
-	"name": "kjr-wp-plugin-template",
+	"name": "gift-giving-draw",
 	"version": "1.0.0",
-	"description": "WordPress Plugin template",
+	"description": "WordPress plugin for generating annual gift-giving pairings with constraints",
 	"prettier": "@wordpress/prettier-config",
 	"browserslist": [
 		"extends @wordpress/browserslist-config"
