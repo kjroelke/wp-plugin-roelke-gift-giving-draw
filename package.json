@@ -1,0 +1,39 @@
+{
+	"name": "kjr-wp-plugin-template",
+	"version": "1.0.0",
+	"description": "WordPress Plugin template",
+	"prettier": "@wordpress/prettier-config",
+	"browserslist": [
+		"extends @wordpress/browserslist-config"
+	],
+	"author": "K.J. Roelke",
+	"files": [
+		"build",
+		"inc",
+		"README.md",
+		"LICENSE",
+		"CHANGELOG.md",
+		"index.php"
+	],
+	"scripts": {
+		"build": "wp-scripts build --blocks-manifest --webpack-copy-php",
+		"lint:css": "npx stylelint '**/*.scss' '**/*.css' --fix --allow-empty-input",
+		"lint:js": "npx eslint --fix",
+		"packages-update": "wp-scripts packages-update",
+		"plugin-zip": "wp-scripts build && wp-scripts plugin-zip",
+		"start": "wp-scripts start --blocks-manifest --webpack-copy-php"
+	},
+	"devDependencies": {
+		"@eslint/compat": "^2",
+		"@eslint/eslintrc": "^3",
+		"@wordpress/scripts": "^31",
+		"eslint": "^9",
+		"eslint-config-prettier": "^10",
+		"eslint-import-resolver-typescript": "^4",
+		"eslint-plugin-react-hooks": "^7",
+		"globals": "^16",
+		"stylelint": "^16",
+		"stylelint-config-standard-scss": "^16",
+		"stylelint-scss": "^6"
+	}
+}

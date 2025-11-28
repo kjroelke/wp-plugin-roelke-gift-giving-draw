@@ -1,0 +1,14 @@
+name: Deploy and Release
+on:
+    push:
+        branches: [main]
+
+jobs:
+    deploy-release:
+        name: Deploy and release
+        if: github.ref == 'refs/heads/main'
+        uses: macrosbysara/shared-github-actions/.github/workflows/deploy-release.yml@main
+        with:
+            should_build: true
+            plugin_name: # Enter plugin name here
+        secrets: inherit

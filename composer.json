@@ -1,0 +1,19 @@
+{
+	"name": "kjroelke/wp-plugin-starter",
+	"description": "A WordPress plugin template.",
+	"type": "project",
+	"config": {
+		"allow-plugins": {
+			"composer/installers": true,
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	},
+	"scripts": {
+		"phpcs": "phpcs inc/ index.php",
+		"phpcbf": "phpcbf inc/ index.php"
+	},
+	"require-dev": {
+		"wp-coding-standards/wpcs": "*",
+		"php-stubs/acf-pro-stubs": "*"
+	}
+}
