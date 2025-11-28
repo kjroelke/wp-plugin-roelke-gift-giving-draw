@@ -54,10 +54,9 @@ class Admin_Shortcode {
 	/**
 	 * Render the shortcode
 	 *
-	 * @param array $atts Shortcode attributes.
 	 * @return string
 	 */
-	public function render_shortcode( $atts ): string {
+	public function render_shortcode(): string {
 		// Check if user has permission.
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return '<p>You do not have permission to access this page.</p>';
