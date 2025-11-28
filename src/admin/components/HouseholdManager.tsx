@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { DrawingSettingsPanel } from './DrawingSettingsPanel';
 import type { Household, Participant } from '../types';
 import { useHouseholds, useParticipants } from '../hooks/useApi';
 
@@ -19,8 +20,12 @@ export function HouseholdManager() {
 	const householdApi = useHouseholds();
 	const participantApi = useParticipants();
 
+	// Track if this is the initial load
+	const [ initialLoad, setInitialLoad ] = useState( true );
 	const loadData = useCallback( async () => {
-		setLoading( true );
+		if ( initialLoad ) {
+			setLoading( true );
+		}
 		try {
 			const [ householdsData, participantsData ] = await Promise.all( [
 				householdApi.getAll(),
@@ -34,14 +39,16 @@ export function HouseholdManager() {
 			);
 		} finally {
 			setLoading( false );
+			setInitialLoad( false );
 		}
-	}, [ householdApi, participantApi ] );
+	}, [ householdApi, participantApi, initialLoad ] );
 
 	useEffect( () => {
 		loadData();
-	}, [ loadData ] );
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [ initialLoad ] );
 
-	if ( loading && households.length === 0 ) {
+	if ( loading ) {
 		return (
 			<div className="gift-draw-manager">
 				<h2>Manage Households & Participants</h2>
@@ -108,7 +115,10 @@ export function HouseholdManager() {
 				) : (
 					<ul className="gift-draw-list">
 						{ households.map( ( household ) => (
-							<li key={ household.id } className="gift-draw-list-item">
+							<li
+								key={ household.id }
+								className="gift-draw-list-item"
+							>
 								<span className="gift-draw-list-item-name">
 									{ household.name }
 								</span>

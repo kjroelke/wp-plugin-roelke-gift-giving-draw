@@ -37,7 +37,8 @@ const fetchApi = async < T >(
 
 export const useHouseholds = () => {
 	const getAll = useCallback( async (): Promise< Household[] > => {
-		return fetchApi< Household[] >( 'households' );
+		const result = await fetchApi< Household[] >( 'households' );
+		return Array.isArray( result ) ? result : [];
 	}, [] );
 
 	const getById = useCallback( async ( id: number ): Promise< Household > => {
@@ -79,7 +80,8 @@ export const useParticipants = () => {
 			const endpoint = householdId
 				? `participants?household_id=${ householdId }`
 				: 'participants';
-			return fetchApi< Participant[] >( endpoint );
+			const result = await fetchApi< Participant[] >( endpoint );
+			return Array.isArray( result ) ? result : [];
 		},
 		[]
 	);
@@ -142,16 +144,22 @@ export const useDrawings = () => {
 		return fetchApi< number[] >( 'drawings/years' );
 	}, [] );
 
-	const getByYear = useCallback( async ( year: number ): Promise< Drawing > => {
-		return fetchApi< Drawing >( `drawings/${ year }` );
-	}, [] );
+	const getByYear = useCallback(
+		async ( year: number ): Promise< Drawing > => {
+			return fetchApi< Drawing >( `drawings/${ year }` );
+		},
+		[]
+	);
 
-	const generate = useCallback( async ( year: number ): Promise< Drawing > => {
-		return fetchApi< Drawing >( 'drawings/generate', {
-			method: 'POST',
-			body: JSON.stringify( { year } ),
-		} );
-	}, [] );
+	const generate = useCallback(
+		async ( year: number ): Promise< Drawing > => {
+			return fetchApi< Drawing >( 'drawings/generate', {
+				method: 'POST',
+				body: JSON.stringify( { year } ),
+			} );
+		},
+		[]
+	);
 
 	const finalize = useCallback(
 		async ( year: number, pairings: Pairing[] ): Promise< Drawing > => {
@@ -173,5 +181,26 @@ export const useDrawings = () => {
 		return fetchApi< Settings >( 'drawings/settings' );
 	}, [] );
 
-	return { getYears, getByYear, generate, finalize, remove, getSettings };
+	const saveSettings = useCallback(
+		async (
+			years_lookback: number,
+			minimum_age: number
+		): Promise< Settings > => {
+			return fetchApi< Settings >( 'drawings/settings', {
+				method: 'POST',
+				body: JSON.stringify( { years_lookback, minimum_age } ),
+			} );
+		},
+		[]
+	);
+
+	return {
+		getYears,
+		getByYear,
+		generate,
+		finalize,
+		remove,
+		getSettings,
+		saveSettings,
+	};
 };

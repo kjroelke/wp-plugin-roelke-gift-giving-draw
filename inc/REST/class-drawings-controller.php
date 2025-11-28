@@ -8,7 +8,6 @@
 
 namespace KJRoelke\GiftGivingDraw\REST;
 
-use KJRoelke\GiftGivingDraw\Domain\Pairing_Engine;
 use KJRoelke\GiftGivingDraw\Persistence\Drawing_Repository;
 use KJRoelke\GiftGivingDraw\Persistence\Participant_Repository;
 use WP_REST_Controller;
@@ -49,27 +48,17 @@ class Drawings_Controller extends WP_REST_Controller {
 	private Participant_Repository $participant_repository;
 
 	/**
-	 * Pairing engine
-	 *
-	 * @var Pairing_Engine
-	 */
-	private Pairing_Engine $pairing_engine;
-
-	/**
 	 * Constructor
 	 *
 	 * @param Drawing_Repository     $drawing_repository     Drawing repository.
 	 * @param Participant_Repository $participant_repository Participant repository.
-	 * @param Pairing_Engine         $pairing_engine         Pairing engine.
 	 */
 	public function __construct(
 		Drawing_Repository $drawing_repository,
 		Participant_Repository $participant_repository,
-		Pairing_Engine $pairing_engine
 	) {
 		$this->drawing_repository     = $drawing_repository;
 		$this->participant_repository = $participant_repository;
-		$this->pairing_engine         = $pairing_engine;
 	}
 
 	/**
@@ -109,25 +98,6 @@ class Drawings_Controller extends WP_REST_Controller {
 			)
 		);
 
-		// Generate draft pairings.
-		register_rest_route(
-			$this->namespace,
-			'/' . $this->rest_base . '/generate',
-			array(
-				array(
-					'methods'             => 'POST',
-					'callback'            => array( $this, 'generate_draft' ),
-					'permission_callback' => array( $this, 'create_item_permissions_check' ),
-					'args'                => array(
-						'year' => array(
-							'required' => true,
-							'type'     => 'integer',
-						),
-					),
-				),
-			)
-		);
-
 		// Finalize drawing.
 		register_rest_route(
 			$this->namespace,
@@ -151,7 +121,7 @@ class Drawings_Controller extends WP_REST_Controller {
 			)
 		);
 
-		// Get settings.
+		// Get and update settings.
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base . '/settings',
@@ -161,7 +131,48 @@ class Drawings_Controller extends WP_REST_Controller {
 					'callback'            => array( $this, 'get_settings' ),
 					'permission_callback' => array( $this, 'get_items_permissions_check' ),
 				),
+				array(
+					'methods'             => 'POST',
+					'callback'            => array( $this, 'save_settings' ),
+					'permission_callback' => array( $this, 'create_item_permissions_check' ),
+					'args'                => array(
+						'years_lookback' => array(
+							'required' => true,
+							'type'     => 'integer',
+						),
+						'minimum_age'    => array(
+							'required' => true,
+							'type'     => 'integer',
+						),
+					),
+				),
 			)
+		);
+	}
+
+	/**
+	 * Save pairing engine settings
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function save_settings( $request ) {
+		$years_lookback = (int) $request->get_param( 'years_lookback' );
+		$minimum_age    = (int) $request->get_param( 'minimum_age' );
+
+		// No longer update pairing engine in-memory; only persist to options
+
+		// Persist settings to options table
+		update_option( 'gift_giving_draw_years_lookback', $years_lookback );
+		update_option( 'gift_giving_draw_minimum_age', $minimum_age );
+
+		return new WP_REST_Response(
+			array(
+				'years_lookback' => $years_lookback,
+				'minimum_age'    => $minimum_age,
+				'current_year'   => (int) gmdate( 'Y' ),
+			),
+			200
 		);
 	}
 
@@ -200,49 +211,6 @@ class Drawings_Controller extends WP_REST_Controller {
 		);
 	}
 
-	/**
-	 * Generate draft pairings (not saved)
-	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response|WP_Error
-	 */
-	public function generate_draft( $request ) {
-		$year = (int) $request->get_param( 'year' );
-
-		// Get all participants.
-		$participants = $this->participant_repository->get_all();
-
-		if ( empty( $participants ) ) {
-			return new WP_Error( 'no_participants', 'No participants found', array( 'status' => 400 ) );
-		}
-
-		// Get past pairings.
-		$past_pairings = $this->drawing_repository->get_past_pairings(
-			$this->pairing_engine->get_years_lookback(),
-			$year
-		);
-
-		// Generate pairings.
-		$pairings = $this->pairing_engine->generate( $participants, $past_pairings, $year );
-
-		if ( null === $pairings ) {
-			return new WP_Error(
-				'generation_failed',
-				'Could not generate valid pairings with the current constraints',
-				array( 'status' => 400 )
-			);
-		}
-
-		$data = array_map( fn( $p ) => $p->to_array(), $pairings );
-		return new WP_REST_Response(
-			array(
-				'year'     => $year,
-				'pairings' => $data,
-				'is_draft' => true,
-			),
-			200
-		);
-	}
 
 	/**
 	 * Finalize and save a drawing
@@ -314,10 +282,12 @@ class Drawings_Controller extends WP_REST_Controller {
 	 * @return WP_REST_Response
 	 */
 	public function get_settings( $request ): WP_REST_Response {
+		$years_lookback = get_option( 'gift_giving_draw_years_lookback', 3 );
+		$minimum_age    = get_option( 'gift_giving_draw_minimum_age', 18 );
 		return new WP_REST_Response(
 			array(
-				'years_lookback' => $this->pairing_engine->get_years_lookback(),
-				'minimum_age'    => $this->pairing_engine->get_minimum_age(),
+				'years_lookback' => (int) $years_lookback,
+				'minimum_age'    => (int) $minimum_age,
 				'current_year'   => (int) gmdate( 'Y' ),
 			),
 			200

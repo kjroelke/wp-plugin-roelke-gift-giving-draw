@@ -9,7 +9,6 @@
 namespace KJRoelke\GiftGivingDraw;
 
 use KJRoelke\GiftGivingDraw\Admin\Admin_Shortcode;
-use KJRoelke\GiftGivingDraw\Domain\Pairing_Engine;
 use KJRoelke\GiftGivingDraw\Persistence\Database_Schema;
 use KJRoelke\GiftGivingDraw\Persistence\Drawing_Repository;
 use KJRoelke\GiftGivingDraw\Persistence\Household_Repository;
@@ -73,7 +72,6 @@ class Plugin_Loader {
 		require_once $this->dir_path . 'inc/Domain/class-participant.php';
 		require_once $this->dir_path . 'inc/Domain/class-household.php';
 		require_once $this->dir_path . 'inc/Domain/class-pairing.php';
-		require_once $this->dir_path . 'inc/Domain/class-pairing-engine.php';
 
 		// Persistence.
 		require_once $this->dir_path . 'inc/Persistence/class-database-schema.php';
@@ -109,7 +107,6 @@ class Plugin_Loader {
 		$household_repository   = new Household_Repository();
 		$participant_repository = new Participant_Repository();
 		$drawing_repository     = new Drawing_Repository( $participant_repository );
-		$pairing_engine         = new Pairing_Engine( $this->years_lookback, $this->minimum_age );
 
 		$households_controller = new Households_Controller( $household_repository );
 		$households_controller->register_routes();
@@ -120,7 +117,6 @@ class Plugin_Loader {
 		$drawings_controller = new Drawings_Controller(
 			$drawing_repository,
 			$participant_repository,
-			$pairing_engine
 		);
 		$drawings_controller->register_routes();
 	}

@@ -5,6 +5,7 @@ import { DrawingGenerator } from './DrawingGenerator';
 import { HistoricalDrawings } from './HistoricalDrawings';
 import { HouseholdManager } from './HouseholdManager';
 import './App.css';
+import { DrawingSettingsPanel } from './DrawingSettingsPanel';
 
 type TabId = 'draw' | 'history' | 'manage';
 
@@ -34,6 +35,7 @@ export function App() {
 		{ id: 'draw', label: 'Generate Drawing' },
 		{ id: 'history', label: 'History' },
 		{ id: 'manage', label: 'Manage' },
+		{ id: 'settings', label: 'Settings' },
 	];
 
 	if ( error ) {
@@ -77,6 +79,12 @@ export function App() {
 				) }
 				{ activeTab === 'history' && <HistoricalDrawings /> }
 				{ activeTab === 'manage' && <HouseholdManager /> }
+				{ activeTab === 'settings' && (
+					<DrawingSettingsPanel
+						settings={ settings }
+						setSettings={ setSettings }
+					/>
+				) }
 			</main>
 		</div>
 	);
